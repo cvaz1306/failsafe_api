@@ -15,7 +15,7 @@ FailsafeAPI is a secure command and monitoring framework using signed WebSocket 
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/failsafeapi.git
+git clone https://github.com/cvaz1306/failsafe_api.git
 cd failsafeapi
 python3 -m venv venv
 source venv/bin/activate
