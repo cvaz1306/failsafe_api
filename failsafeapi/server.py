@@ -34,11 +34,12 @@ class FailsafeServer:
         try:
             while True:
                 payload = {"timestamp": datetime.now(timezone.utc).isoformat()}
+                logging.info(f"Preparing to sign: {payload}")
                 signed_data = gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint, passphrase=self.gpg_passphrase)
+                logging.info(f"Preparing to semd: {str(signed_data)}")
                 if not signed_data:
                     logging.error("Failed to sign timestamp payload")
                     break
-                log.info("Preparing to send: payload")
                 await websocket.send(str(signed_data))
                 await asyncio.sleep(CHECK_INTERVAL)
         except asyncio.CancelledError:
