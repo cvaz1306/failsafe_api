@@ -16,12 +16,14 @@ gpg = gnupg.GPG()
 CHECK_INTERVAL = 5
 
 class FailsafeServer:
-    def __init__(self, private_key_fingerprint):
+    def __init__(self, private_key_fingerprint, gpg_passphrase=None):
         self.private_key_fingerprint = private_key_fingerprint
         self.clients = {}
+        self.gpg_passphrase = gpg_passphrase
 
-    async def handler(self, websocket, path):
-        headers = websocket.request_headers
+    async def handler(self, websocket, path="/"):
+        headers = websocket.request.headers
+        
         client_id = headers.get("X-Client-ID")
         if not client_id:
             await websocket.close()
@@ -32,7 +34,7 @@ class FailsafeServer:
         try:
             while True:
                 payload = {"timestamp": datetime.now(timezone.utc).isoformat()}
-                signed_data = gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint)
+                signed_data = gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint, passphrase=self.gpg_passphrase)
                 if not signed_data:
                     logging.error("Failed to sign timestamp payload")
                     break
@@ -52,7 +54,7 @@ class FailsafeServer:
             "command": command,
             "args": args,
         }
-        signed_data = gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint)
+        signed_data = gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint, passphrase=self.gpg_passphrase)
         if not signed_data:
             logging.error("Failed to sign command payload")
             return

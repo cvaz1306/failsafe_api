@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+
+recursive-include failsafeapi *.py
+recursive-include failsafeapi/example *.py
+
+global-exclude __pycache__ *.pyc *.pyo *.pyd

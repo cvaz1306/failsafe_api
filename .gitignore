@@ -1,1 +1,9 @@
 venv/
+*.pyc
+*.cpython
+*.asc
+dist/
+*.egg-info
+__pycache__/
+*/__pycache__/
+failsafeapi/__pycache__/server.cpython-311.pyc
