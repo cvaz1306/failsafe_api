@@ -38,6 +38,7 @@ class FailsafeServer:
                 if not signed_data:
                     logging.error("Failed to sign timestamp payload")
                     break
+                log.info("Preparing to send: payload")
                 await websocket.send(str(signed_data))
                 await asyncio.sleep(CHECK_INTERVAL)
         except asyncio.CancelledError:
