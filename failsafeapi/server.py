@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 
 logging.basicConfig(level=logging.INFO)
 
-gpg = gnupg.GPG()
+
 
 CHECK_INTERVAL = 5
 
@@ -19,7 +19,8 @@ class FailsafeServer:
     def __init__(self, private_key_fingerprint, gpg_passphrase=None):
         self.private_key_fingerprint = private_key_fingerprint
         self.clients = {}
-        self.gpg_passphrase = gpg_passphrase
+        self.gpg = gnupg.GPG(use_agent=(gpg_passphrase is not None))
+        self.self.gpg_passphrase = self.gpg_passphrase
 
     async def handler(self, websocket, path="/"):
         headers = websocket.request.headers
@@ -35,7 +36,7 @@ class FailsafeServer:
             while True:
                 payload = {"timestamp": datetime.now(timezone.utc).isoformat()}
                 logging.info(f"Preparing to sign: {payload}")
-                signed_data = gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint, passphrase=self.gpg_passphrase)
+                signed_data = self.gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint, passphrase=self.self.gpg_passphrase)
                 logging.info(f"Preparing to semd: {str(signed_data)}")
                 if not signed_data:
                     logging.error("Failed to sign timestamp payload")
@@ -56,7 +57,7 @@ class FailsafeServer:
             "command": command,
             "args": args,
         }
-        signed_data = gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint, passphrase=self.gpg_passphrase)
+        signed_data = self.gpg.sign(json.dumps(payload), keyid=self.private_key_fingerprint, passphrase=self.gpg_passphrase)
         if not signed_data:
             logging.error("Failed to sign command payload")
             return
