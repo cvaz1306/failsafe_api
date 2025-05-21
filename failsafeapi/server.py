@@ -24,7 +24,7 @@ class FailsafeServer:
     async def handler(self, websocket, path="/"):
         headers = websocket.request.headers
         
-        client_id = headers.get("X-Client-ID")
+        client_id = headers.get("X-Client-ID", str(websocket.remote_address))
         if not client_id:
             await websocket.close()
             return
