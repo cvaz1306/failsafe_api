@@ -20,7 +20,7 @@ class FailsafeServer:
         self.private_key_fingerprint = private_key_fingerprint
         self.clients = {}
         self.gpg = gnupg.GPG(use_agent=(gpg_passphrase is not None))
-        self.gpg_passphrase = self.gpg_passphrase
+        self.gpg_passphrase = gpg_passphrase
 
     async def handler(self, websocket, path="/"):
         headers = websocket.request.headers
